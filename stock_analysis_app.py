@@ -6,13 +6,13 @@ from bokeh.plotting import figure
 from bokeh.layouts import column, row
 from bokeh.models import TextInput, Button, DatePicker, MultiChoice
 
-# Load data function
+# Load data function: Downloads stock data for two tickers within the specified date range
 def load_data(ticker1, ticker2, start, end):
     df1 = yf.download(ticker1, start, end)
     df2 = yf.download(ticker2, start, end)
     return df1, df2
 
-# Update plot function
+# Update plot function: Creates and updates a Bokeh plot with candlestick bars and technical indicators
 def update_plot(data, indicators, sync_axis=None):
     df = data
     gain = df.Close > df.Open
@@ -49,7 +49,7 @@ def update_plot(data, indicators, sync_axis=None):
 
     return p
 
-# Button click handler
+# Button click handler: Handles the button click event, loads data, updates the plot, and synchronizes x-axis
 def on_button_click(main_stock, comparison_stock, start, end, indicators):
     source1, source2 = load_data(main_stock, comparison_stock, start, end)
     p = update_plot(source1, indicators)
@@ -63,12 +63,13 @@ date_picker_from = DatePicker(title='Start Date', value="2020-01-01", min_date="
 date_picker_to = DatePicker(title='End Date', value="2020-02-01", min_date="2000-01-01", max_date=dt.datetime.now().strftime("%Y-%m-%d"))
 indicator_choice = MultiChoice(options=["100 Day SMA", "30 Day SMA", "Linear Regression Line"])
 
+# Button for loading data
 load_button = Button(label="Load Data", button_type="success")
 load_button.on_click(lambda: on_button_click(stock1_text.value, stock2_text.value, date_picker_from.value, date_picker_to.value, indicator_choice.value))
 
+# Organize UI elements using a column layout
 layout = column(stock1_text, stock2_text, date_picker_from, date_picker_to, indicator_choice, load_button)
 
-# Initialize the app
+# Initialize the app if executed as the main module
 if __name__ == "__main__":
     curdoc().add_root(layout)
-
